@@ -1,3 +1,5 @@
+/* Assuming you have a CSS file or styles setup */
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -18,4 +20,22 @@
     opacity: 0;
     visibility: hidden;
   }
+}
+
+/* Apply the styles to the success message */
+.block {
+  animation: fade-out 0.3s ease-out; /* Initial fade-out state */
+  transition: visibility 0s linear 0.3s, opacity 0.3s ease-out 0.3s;
+}
+
+.block.fade-in {
+  animation: fade-in 0.3s ease-in; /* Apply fade-in animation */
+  visibility: visible;
+  opacity: 1;
+}
+
+.block.fade-out {
+  animation: fade-out 0.3s ease-out; /* Apply fade-out animation */
+  visibility: hidden;
+  opacity: 0;
 }
