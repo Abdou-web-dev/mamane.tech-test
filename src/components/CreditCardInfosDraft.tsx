@@ -50,7 +50,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
   const [expirationDateValid, setExpirationDateValid] = useState(true);
   const [cvvValid, setCvvValid] = useState(true);
 
-  function validateFields(): boolean {
+  function validateFields() {
     // Reset validation state
     setEmailValid(true);
     setNameValid(true);
@@ -58,36 +58,25 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     setCardNumberValid(true);
     setExpirationDateValid(true);
     setCvvValid(true);
-
     // Perform validation logic here
-    if (!emailField) {
-      setEmailValid(false);
-    }
-    if (!nameField) {
-      setNameValid(false);
-    }
-    if (!addressField) {
-      setAddressValid(false);
-    }
-    if (!creditCardNumber) {
-      setCardNumberValid(false);
-    }
-    if (!expirationDate) {
-      setExpirationDateValid(false);
-    }
-    if (!cvvField) {
-      setCvvValid(false);
-    }
+    if (!emailField) setEmailValid(false);
+    if (!nameField) setNameValid(false);
+    if (!addressField) setAddressValid(false);
+    if (!creditCardNumber) setCardNumberValid(false);
+    if (!expirationDate) setExpirationDateValid(false);
+    if (!cvvField) setCvvValid(false);
 
-    // Return true if all fields are valid, false otherwise
-    return (
-      emailValid &&
-      nameValid &&
-      addressValid &&
-      cardNumberValid &&
-      expirationDateValid &&
-      cvvValid
-    );
+    // If any field is missing, prevent further action
+    if (
+      !emailField ||
+      !nameField ||
+      !addressField ||
+      !creditCardNumber ||
+      !expirationDate ||
+      !cvvField
+    ) {
+      return;
+    }
   }
 
   // To remove the red border as soon as the user types something in the field
@@ -142,29 +131,19 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
   });
 
   const postOrder = async (orderData: OrderDataType) => {
-    try {
-      // Perform the actual mutation logic here
-      const response = await fetch("your-api-endpoint", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
-
-      // Check if the response was successful
-      if (response.ok) {
-        const result = await response.json();
-        return { success: true, message: result.message };
-      } else {
-        // Handle the case where the response is not OK
-        return { success: false, message: "Error placing the order" };
-      }
-    } catch (error) {
-      // Handle any other errors that may occur during the mutation
-      console.error("Mutation error:", error);
-      return { success: false, message: "Error placing the order" };
+    console.log("Sending POST request with data:", orderData);
+    // If any field is missing, prevent further action
+    if (
+      !emailField ||
+      !nameField ||
+      !addressField ||
+      !creditCardNumber ||
+      !expirationDate ||
+      !cvvField
+    ) {
+      return;
     }
+    return { success: true, message: "" };
   };
 
   const {
@@ -384,9 +363,8 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       <div>
         <button
           onClick={() => {
-            if (validateFields()) {
-              handleCheckout();
-            }
+            validateFields();
+            handleCheckout();
           }}
           disabled={loading}
           className={`mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue relative ${

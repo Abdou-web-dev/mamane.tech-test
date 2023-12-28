@@ -18,7 +18,7 @@ const CheckoutPage = () => {
         <SelectedItems {...{ selectedItems }} />
       </div>
       <div className="right w-1/2 mt-10">
-        <CreditCardInfos /> {/* Adding margin between cards */}
+        <CreditCardInfos />
       </div>
     </div>
   );

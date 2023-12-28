@@ -11,6 +11,13 @@ import {
 let productIdCounter = 0;
 
 export interface CreditCardContextType {
+  // postOrder: Promise<
+  //   | {
+  //       success: boolean;
+  //       message: string;
+  //     }
+  //   | undefined
+  // >;
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
   email: string;
@@ -30,9 +37,9 @@ export interface CreditCardContextType {
     quantity: number;
     price: number;
   }[];
-  handleCheckout: () => void;
+  // handleCheckout: () => void;
   isLoading: boolean;
-  loading: boolean;
+  // loading: boolean;
   isError: boolean;
   isSuccess: boolean;
 
@@ -43,7 +50,7 @@ export interface CreditCardContextType {
       }
     | undefined;
   error: any;
-  showSuccess: boolean;
+  // showSuccess: boolean;
 }
 
 export const CreditCardContext = createContext<CreditCardContextType>({
@@ -77,9 +84,8 @@ export const CreditCardContext = createContext<CreditCardContextType>({
       cvv: "",
     },
   },
-  handleCheckout: () => {},
   isLoading: false,
-  loading: false,
+  // loading: false,
   isError: false,
   isSuccess: false,
   data: {
@@ -87,7 +93,6 @@ export const CreditCardContext = createContext<CreditCardContextType>({
     message: "",
   },
   error: "",
-  showSuccess: false,
 });
 
 export const CreditCardContextProvider = ({
@@ -117,8 +122,6 @@ export const CreditCardContextProvider = ({
   const [cardNumber, setCardNumber] = useState("");
   const [expirationDate, setExpirationDate] = useState("");
   const [cvv, setCvv] = useState("");
-
-  const [loading, setIsLoading] = useState(false);
 
   const customerDetails = {
     name: name,
@@ -156,7 +159,7 @@ export const CreditCardContextProvider = ({
 
   // Define a mutation for the POST request
   const {
-    mutate,
+    // mutate,
     isLoading,
     isError,
     data,
@@ -241,37 +244,6 @@ export const CreditCardContextProvider = ({
     // Set jsonData in state if needed
     setJsonData(jsonData);
   };
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  const handleCheckout = () => {
-    if (!email || !name || !address || !cardNumber || !expirationDate || !cvv) {
-      return;
-    }
-    setIsLoading(true);
-
-    // Introduce a delay before placing the order
-    setTimeout(async () => {
-      // Call the mutation to send the POST request
-      const result = await mutate(orderData);
-
-      // If successful, you might want to handle the result accordingly
-      if (result && result.success) {
-        // Handle success (e.g., show a success message)
-        console.log(result.message);
-      }
-
-      // Reset loading state after placing the order
-      setIsLoading(false);
-    }, 2000); // 2000 milliseconds (2 seconds)
-
-    // Assuming you want to show the success message upon successful checkout
-    setShowSuccess(true);
-
-    // Delay to hide the success message after 3 seconds
-    setTimeout(() => {
-      setShowSuccess(false);
-    }, 5000);
-  };
 
   const generateRandomProduct = () => {
     // Increment a counter to ensure unique productId values
@@ -314,14 +286,14 @@ export const CreditCardContextProvider = ({
         setCvv,
         orderData,
         selectedItems,
-        handleCheckout,
+        // handleCheckout,
         isLoading,
         isError,
         isSuccess,
         error,
         data,
-        loading,
-        showSuccess,
+        // loading,:
+        // showSuccess,
       }}
     >
       {children}
