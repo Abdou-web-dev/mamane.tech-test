@@ -1,9 +1,10 @@
 interface CreditCardInfosProps {}
 import { number } from "card-validator";
-import { FunctionComponent, useContext, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { UseMutateFunction, useMutation } from "react-query";
 import { object, string } from "zod";
 import { CreditCardContext } from "../context/CreditCardContext";
+import ExpiryDateDropdown from "./DatePicker";
 import "./styles.css";
 
 export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
@@ -19,8 +20,8 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     setCardNumber,
     cvv: cvvField,
     setCvv,
-    expirationDate,
-    setExpirationDate,
+    // expirationDate,
+    // setExpirationDate,
     // handleCheckout,
     // isLoading,
     // loading,
@@ -47,8 +48,13 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
   const [nameValid, setNameValid] = useState(true);
   const [addressValid, setAddressValid] = useState(true);
   const [cardNumberValid, setCardNumberValid] = useState(true);
-  const [expirationDateValid, setExpirationDateValid] = useState(true);
+  // const [expirationDateValid, setExpirationDateValid] = useState(true);
   const [cvvValid, setCvvValid] = useState(true);
+  // **********
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [monthValid, setMonthValid] = useState(true);
+  const [yearValid, setYearValid] = useState(true);
 
   function validateFields(): boolean {
     // Reset validation state
@@ -56,8 +62,10 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     setNameValid(true);
     setAddressValid(true);
     setCardNumberValid(true);
-    setExpirationDateValid(true);
+    // setExpirationDateValid(true);
     setCvvValid(true);
+    setMonthValid(true);
+    setYearValid(true);
 
     // Perform validation logic here
     if (!emailField) {
@@ -72,23 +80,33 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     if (!creditCardNumber) {
       setCardNumberValid(false);
     }
-    if (!expirationDate) {
-      setExpirationDateValid(false);
-    }
+    // if (!expirationDate) {
+    //   // setExpirationDateValid(false);
+    // }
     if (!cvvField) {
       setCvvValid(false);
+    }
+    if (!selectedMonth) {
+      setMonthValid(false); // Set to true if the condition is met
+    }
+    if (!selectedYear) {
+      setYearValid(false);
     }
 
     // Return true if all fields are valid, false otherwise
     return (
+      yearValid &&
+      monthValid &&
       emailValid &&
       nameValid &&
       addressValid &&
       cardNumberValid &&
-      expirationDateValid &&
+      // expirationDateValid &&
       cvvValid
     );
   }
+
+  // Outside the component or as part of your state management
 
   // To remove the red border as soon as the user types something in the field
   const handleBlur = (field: string) => {
@@ -105,12 +123,23 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
         break;
       case "cardNumber":
         setCardNumberValid(!!creditCardNumber);
+        // setCardNumberValid(creditCardNumber.length === 16);
+        // if (creditCardNumber.length !== 16) {
+        //   setModalMessage("Credit card number must be 16 digits.");
+        //   setShowModal(true);
+        // }
         break;
       case "expirationDate":
-        setExpirationDateValid(!!expirationDate);
+        // setExpirationDateValid(!!expirationDate);
         break;
       case "cvv":
         setCvvValid(!!cvvField);
+        break;
+      case "month":
+        setMonthValid(!!selectedMonth);
+        break;
+      case "year":
+        setYearValid(!!selectedYear);
         break;
       default:
         break;
@@ -141,28 +170,40 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     // }),
   });
 
-  const postOrder = async (orderData: OrderDataType) => {
-    try {
-      // Perform the actual mutation logic here
-      const response = await fetch("your-api-endpoint", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
+  const emailSchema = object({
+    email: string().email(),
+  });
+  const emailData = {
+    email: emailField,
+  };
+  const emailValidationResult = emailSchema.safeParse(emailData);
 
-      // Check if the response was successful
-      if (response.ok) {
-        const result = await response.json();
-        return { success: true, message: result.message };
-      } else {
-        // Handle the case where the response is not OK
-        return { success: false, message: "Error placing the order" };
-      }
+  const postOrder = async (orderData: OrderDataType) => {
+    console.log("Sending POST request with data:", orderData);
+
+    try {
+      // Simulate a successful response from the server
+      // Adjust this part based on the actual structure of your server response
+      const simulatedResponse = {
+        success: true,
+        message: "Order placed successfully!",
+      };
+
+      console.log(
+        "Server response:",
+        simulatedResponse.success,
+        simulatedResponse.message
+      );
+      // Assuming you want to show the success message upon successful checkout
+      setShowSuccess(true);
+      // Delay to hide the success message after 3 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+      return simulatedResponse;
     } catch (error) {
-      // Handle any other errors that may occur during the mutation
       console.error("Mutation error:", error);
+      // Simulate an error response from the server
       return { success: false, message: "Error placing the order" };
     }
   };
@@ -191,7 +232,8 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       !nameField ||
       !addressField ||
       !creditCardNumber ||
-      !expirationDate ||
+      !selectedMonth ||
+      !selectedYear ||
       !cvvField
     ) {
       return;
@@ -211,20 +253,16 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
         setTimeout(async () => {
           try {
             // Call the mutation to send the POST request
+            // console.error("About to call mutate with orderData:", orderData);
             const result = await mutate(orderData);
+            // console.log(result);
 
             // If successful, you might want to handle the result accordingly
             if (result && result.success) {
               // Handle success (e.g., show a success message)
               console.log(result.message);
 
-              // Assuming you want to show the success message upon successful checkout
-              setShowSuccess(true);
-
-              // Delay to hide the success message after 3 seconds
-              setTimeout(() => {
-                setShowSuccess(false);
-              }, 3000);
+              // setShowSuccess(true);
             }
           } catch (error) {
             // Handle mutation error
@@ -247,10 +285,16 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     }
   };
 
+  useEffect(() => {
+    if (nameField) handleBlur("name");
+    if (addressField) handleBlur("address");
+    if (emailField) handleBlur("email");
+  }, [nameField, addressField, emailField]);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
       {/* Customer Details */}
-      <div>
+      <div className="">
         <h2 className="text-xl font-bold mb-4 text-blue-600">
           Customer Details
         </h2>
@@ -259,16 +303,28 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
         <label className="block mb-4">
           <span className="text-gray-700">Email:</span>
           <input
+            className={`w-full p-2 border ${
+              !emailValid ? "border-red-500" : "border-gray-300"
+            } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
             data-cy={`email ${emailField ? "email-not-empty" : "email-empty"}`} // Adding the data-cy attribute
             type="email"
             placeholder="Email"
             value={emailField}
             onChange={(e) => setEmail(e.target.value)}
             onBlur={() => handleBlur("email")}
-            className={`w-full p-2 border ${
-              !emailValid ? "border-red-500" : "border-gray-300"
-            } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
           />
+
+          {emailField && (
+            <div
+              className={`text-sm ${
+                emailValidationResult.success
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              {emailValidationResult.success ? "Valid email" : "Invalid email"}
+            </div>
+          )}
         </label>
 
         {/* Name */}
@@ -278,7 +334,9 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
             type="text"
             value={nameField}
             placeholder="Cardholder Name"
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+            }}
             onBlur={() => handleBlur("name")}
             className={`w-full p-2 border ${
               !nameValid ? "border-red-500" : "border-gray-300"
@@ -312,15 +370,20 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
         <label className="block mb-4">
           <span className="text-gray-700">Card Number:</span>
           <input
-            type="number"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={creditCardNumber}
-            // onChange={(e) => setCardNumber(e.target.value)}
             onChange={(e) => {
               let inputValue = e.target.value;
-              // Limit the length to 3 characters
+              // Remove non-numeric characters
+              inputValue = inputValue.replace(/\D/g, "");
+              // Limit the length to 16 characters
               if (inputValue.length > 16) {
                 inputValue = inputValue.slice(0, 16);
               }
+
+              setCardNumberValid(inputValue.length === 16);
               setCardNumber(inputValue);
             }}
             onBlur={() => handleBlur("cardNumber")}
@@ -328,20 +391,41 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
               !cardNumberValid ? "border-red-500" : "border-gray-300"
             } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
           />
+          {creditCardNumber && creditCardNumber.length !== 16 && (
+            <div className="text-red-500">
+              Credit card number must be 16 digits.
+            </div>
+          )}
+          {creditCardNumber && creditCardNumber.length === 16 && (
+            <div
+              className={`text-sm ${
+                isValidCardNumber(creditCardNumber)
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              {!isValidCardNumber(creditCardNumber)
+                ? " Credit card number is not valid."
+                : "Valid credit card number"}
+            </div>
+          )}
         </label>
 
         {/* Expiration Date and CVV */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Expiration Date */}
-          <label className="block">
+          {/* <label className="block">
             <span className="text-gray-700">Expiration Date:</span>
             <input
-              type="number"
               value={expirationDate}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               onChange={(e) => {
                 // Get the input value
                 let inputValue = e.target.value;
                 // Limit the length to 4 characters
+                inputValue = inputValue.replace(/\D/g, "");
                 if (inputValue.length > 4) {
                   inputValue = inputValue.slice(0, 4);
                 }
@@ -353,17 +437,32 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
                 !expirationDateValid ? "border-red-500" : "border-gray-300"
               } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
             />
-          </label>
+          </label> */}
+
+          <ExpiryDateDropdown
+            {...{
+              selectedMonth,
+              setSelectedMonth,
+              selectedYear,
+              setSelectedYear,
+              monthValid,
+              handleBlur,
+              yearValid,
+            }}
+          />
 
           {/* CVV */}
           <label className="block">
             <span className="text-gray-700">CVV:</span>
             <input
-              type="number"
+              type="text"
               value={cvvField}
+              inputMode="numeric"
+              pattern="[0-9]*"
               onChange={(e) => {
                 // Get the input value
                 let inputValue = e.target.value;
+                inputValue = inputValue.replace(/\D/g, "");
                 // Limit the length to 3 characters
                 if (inputValue.length > 3) {
                   inputValue = inputValue.slice(0, 3);
@@ -377,6 +476,17 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
               } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
               data-cy="cvv"
             />
+            {cvvField && (
+              <div
+                className={`text-sm ${
+                  cvvField.length === 3 ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                {cvvField.length !== 3
+                  ? "CVV must be 3 digits long"
+                  : "CVV is valid"}
+              </div>
+            )}
           </label>
         </div>
       </div>
@@ -407,7 +517,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
           {loading ? "Placing Order..." : "Checkout"}
         </button>
 
-        {showSuccess && (
+        {!loading && showSuccess && (
           <p
             // style={{ display: showSuccess && !loading ? "block" : "none" }}
             className={`block bg-green-500 text-white font-bold p-2 rounded mt-4 w-full text-center ${
@@ -422,7 +532,11 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       </div>
 
       {isError && <p className="text-red-500">Error: {error.message}</p>}
-      {data && <p className="text-green-500">{data.message}</p>}
+      {/* <>
+        {showModal && (
+          <Modal message={modalMessage} onClose={handleModalClose} />
+        )}
+      </> */}
     </div>
   );
 };

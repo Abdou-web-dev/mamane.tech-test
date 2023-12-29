@@ -39,3 +39,120 @@
   visibility: hidden;
   opacity: 0;
 }
+
+/* Add this to your CSS or use a CSS-in-JS solution */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+/* Custom styles for the wrapper */
+.react-date-picker__wrapper {
+  /* Add a border around the date picker */
+  border: 1px solid #ccc;
+  /* Add some padding */
+  padding: 8px;
+  /* Make the wrapper slightly rounded */
+  border-radius: 4px;
+  /* Add a box shadow for a subtle lift */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom styles for the calendar */
+.react-date-picker__calendar {
+  /* Change the background color of the calendar */
+  background-color: #fff;
+  /* Add some padding to the calendar */
+  padding: 16px;
+  /* Make the calendar slightly rounded */
+  border-radius: 4px;
+  /* Add a box shadow for a subtle lift */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom styles for the day component inside the calendar */
+.react-calendar__tile {
+  /* Change the font color of the days */
+  color: #333;
+}
+
+/* Custom styles for the selected day inside the calendar */
+.react-calendar__tile--active {
+  /* Change the background color of the selected day */
+  background-color: #007bff;
+  /* Change the font color of the text on the selected day */
+  color: #fff;
+}
+/* Style for the container of the custom dropdown */
+.custom-dropdown {
+  display: flex;
+  flex-direction: column;
+  width: 200px; /* Adjust the width as needed */
+}
+
+/* Style for the individual select elements */
+.custom-dropdown select {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Style for the options within the select elements */
+.custom-dropdown select option {
+  font-size: 14px;
+}
+/* Style for the container of the custom dropdown */
+.custom-dropdown {
+  display: flex;
+  flex-direction: column;
+  width: 200px; /* Adjust the width as needed */
+}
+
+/* Style for the individual select elements */
+.custom-dropdown select {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  /*  */
+  outline: none;
+  font-size: 14px;
+  width: 50%; /* Set the width to 50% */
+  transition: box-shadow 0.3s ease; /* Add transition for smooth hover effect */
+  /* Add a background image (arrow) and position it to the right */
+  background: url("../assets/img/arrow.svg") no-repeat right center;
+  /* Adjust the position of the background image */
+  background-position: calc(100% - 10px) center;
+}
+.custom-dropdown select:hover {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Add a subtle box shadow on hover */
+}
+/* Style for the options within the select elements */
+.custom-dropdown select option {
+  font-size: 14px;
+}
+select.border-red-500 {
+  border: 1px solid red;
+}
+select.border-gray-300 {
+  border: 1px solid rgba(79, 59, 59, 0.343);
+}
+.custom-dropdown select option {
+  font-size: 15.5px;
+}

@@ -385,7 +385,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
           {loading ? "Placing Order..." : "Checkout"}
         </button>
 
-        {showSuccess && (
+        {!loading && (
           <p
             // style={{ display: showSuccess && !loading ? "block" : "none" }}
             className={`block bg-green-500 text-white font-bold p-2 rounded mt-4 w-full text-center ${

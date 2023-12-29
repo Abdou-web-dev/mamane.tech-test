@@ -8,7 +8,7 @@ const CheckoutPage = () => {
   return (
     <div className="ms-32 me-10 flex">
       {/* Adding margin on the left side of the page */}
-      <div className="left w-1/2">
+      <div className="left w-1/3">
         <p className="text-xl font-bold mb-4 text-blue-600">
           <span className="text-md font-serif mb-4 text-gray-600">
             Total Price : &nbsp;
