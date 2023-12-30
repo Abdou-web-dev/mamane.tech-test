@@ -1,15 +1,19 @@
-export const Modal = ({
-  message,
-  onClose,
-}: {
-  message: string;
-  onClose: React.MouseEventHandler<HTMLButtonElement> | undefined;
-}) => {
+import { useContext, useState } from "react";
+import { CreditCardContext } from "../context/CreditCardContext";
+import SelectedItems from "./SelectedItems";
+
+export const Modal = () => {
+  const { selectedItems } = useContext(CreditCardContext);
+
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <div className="modal">
       <div className="modal-content">
-        <p>{message}</p>
-        <button onClick={onClose}>Close</button>
+        <p>{"You ordered the following :"}</p>
+        <SelectedItems {...{ selectedItems }} />
+
+        <button onClick={() => setShowModal(false)}>Close</button>
       </div>
     </div>
   );

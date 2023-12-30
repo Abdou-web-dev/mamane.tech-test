@@ -4,32 +4,22 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { UseMutateFunction, useMutation } from "react-query";
 import { object, string } from "zod";
 import { CreditCardContext } from "../context/CreditCardContext";
-import ExpiryDateDropdown from "./DatePicker";
+import { CheckOutBtn } from "./CheckOutBtn";
+import { CustomerDetails } from "./CustomerDetails";
+import { Modal } from "./MsgModal";
+import { PaymentMethod } from "./PaymentMethod";
 import "./styles.css";
 
 export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
   // I renamed some state variables inside this component , added Field word so that I can use them in zod validation...
   const {
     name: nameField,
-    setName,
     email: emailField,
-    setEmail,
     address: addressField,
-    setAddress,
     cardNumber: creditCardNumber,
-    setCardNumber,
     cvv: cvvField,
-    setCvv,
-    // expirationDate,
-    // setExpirationDate,
-    // handleCheckout,
-    // isLoading,
-    // loading,
     error,
-    data,
     isError,
-    isSuccess,
-    // showSuccess,
     orderData,
   } = useContext(CreditCardContext);
 
@@ -275,8 +265,6 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       } else {
         // Validation failed
         console.error("Validation errors:", validationResult.error.errors);
-
-        // Optionally, you can update state or show error messages to the user
       }
     } catch (error: any) {
       // Handle validation errors
@@ -294,249 +282,44 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
       {/* Customer Details */}
-      <div className="">
-        <h2 className="text-xl font-bold mb-4 text-blue-600">
-          Customer Details
-        </h2>
-
-        {/* Email */}
-        <label className="block mb-4">
-          <span className="text-gray-700">Email:</span>
-          <input
-            className={`w-full p-2 border ${
-              !emailValid ? "border-red-500" : "border-gray-300"
-            } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
-            data-cy={`email ${emailField ? "email-not-empty" : "email-empty"}`} // Adding the data-cy attribute
-            type="email"
-            placeholder="Email"
-            value={emailField}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={() => handleBlur("email")}
-          />
-
-          {emailField && (
-            <div
-              className={`text-sm ${
-                emailValidationResult.success
-                  ? "text-green-500"
-                  : "text-red-500"
-              }`}
-            >
-              {emailValidationResult.success ? "Valid email" : "Invalid email"}
-            </div>
-          )}
-        </label>
-
-        {/* Name */}
-        <label className="block mb-4">
-          <span className="text-gray-700">Name:</span>
-          <input
-            type="text"
-            value={nameField}
-            placeholder="Cardholder Name"
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-            onBlur={() => handleBlur("name")}
-            className={`w-full p-2 border ${
-              !nameValid ? "border-red-500" : "border-gray-300"
-            } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
-            data-cy="name" // Adding the data-cy attribute
-          />
-        </label>
-
-        {/* Address */}
-        <label className="block mb-4">
-          <span className="text-gray-700">Address:</span>
-          <input
-            type="text"
-            placeholder="Type your address"
-            value={addressField}
-            onChange={(e) => setAddress(e.target.value)}
-            onBlur={() => handleBlur("address")}
-            className={`w-full p-2 border ${
-              !addressValid ? "border-red-500" : "border-gray-300"
-            } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
-            data-cy="address"
-          />
-        </label>
-      </div>
+      <CustomerDetails
+        {...{
+          addressValid,
+          emailValid,
+          emailValidationResult,
+          handleBlur,
+          nameValid,
+        }}
+      ></CustomerDetails>
 
       {/* Payment Method */}
-      <div className="card-details">
-        <h2 className="text-xl font-bold mb-4 text-blue-600">Payment Method</h2>
+      <PaymentMethod
+        {...{
+          cvvValid,
+          handleBlur,
+          selectedMonth,
+          setSelectedMonth,
+          selectedYear,
+          setSelectedYear,
+          monthValid,
+          yearValid,
+          cardNumberValid,
+          isValidCardNumber,
+          setCardNumberValid,
+        }}
+      />
 
-        {/* Card Number */}
-        <label className="block mb-4">
-          <span className="text-gray-700">Card Number:</span>
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            value={creditCardNumber}
-            onChange={(e) => {
-              let inputValue = e.target.value;
-              // Remove non-numeric characters
-              inputValue = inputValue.replace(/\D/g, "");
-              // Limit the length to 16 characters
-              if (inputValue.length > 16) {
-                inputValue = inputValue.slice(0, 16);
-              }
-
-              setCardNumberValid(inputValue.length === 16);
-              setCardNumber(inputValue);
-            }}
-            onBlur={() => handleBlur("cardNumber")}
-            className={`w-full p-2 border ${
-              !cardNumberValid ? "border-red-500" : "border-gray-300"
-            } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
-          />
-          {creditCardNumber && creditCardNumber.length !== 16 && (
-            <div className="text-red-500">
-              Credit card number must be 16 digits.
-            </div>
-          )}
-          {creditCardNumber && creditCardNumber.length === 16 && (
-            <div
-              className={`text-sm ${
-                isValidCardNumber(creditCardNumber)
-                  ? "text-green-500"
-                  : "text-red-500"
-              }`}
-            >
-              {!isValidCardNumber(creditCardNumber)
-                ? " Credit card number is not valid."
-                : "Valid credit card number"}
-            </div>
-          )}
-        </label>
-
-        {/* Expiration Date and CVV */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Expiration Date */}
-          {/* <label className="block">
-            <span className="text-gray-700">Expiration Date:</span>
-            <input
-              value={expirationDate}
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              onChange={(e) => {
-                // Get the input value
-                let inputValue = e.target.value;
-                // Limit the length to 4 characters
-                inputValue = inputValue.replace(/\D/g, "");
-                if (inputValue.length > 4) {
-                  inputValue = inputValue.slice(0, 4);
-                }
-                // Set the cvv state with the modified value
-                setExpirationDate(inputValue);
-              }}
-              onBlur={() => handleBlur("expirationDate")}
-              className={`w-full p-2 border ${
-                !expirationDateValid ? "border-red-500" : "border-gray-300"
-              } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
-            />
-          </label> */}
-
-          <ExpiryDateDropdown
-            {...{
-              selectedMonth,
-              setSelectedMonth,
-              selectedYear,
-              setSelectedYear,
-              monthValid,
-              handleBlur,
-              yearValid,
-            }}
-          />
-
-          {/* CVV */}
-          <label className="block">
-            <span className="text-gray-700">CVV:</span>
-            <input
-              type="text"
-              value={cvvField}
-              inputMode="numeric"
-              pattern="[0-9]*"
-              onChange={(e) => {
-                // Get the input value
-                let inputValue = e.target.value;
-                inputValue = inputValue.replace(/\D/g, "");
-                // Limit the length to 3 characters
-                if (inputValue.length > 3) {
-                  inputValue = inputValue.slice(0, 3);
-                }
-                // Set the cvv state with the modified value
-                setCvv(inputValue);
-              }}
-              onBlur={() => handleBlur("cvv")}
-              className={`w-full p-2 border ${
-                !cvvValid ? "border-red-500" : "border-gray-300"
-              } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
-              data-cy="cvv"
-            />
-            {cvvField && (
-              <div
-                className={`text-sm ${
-                  cvvField.length === 3 ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {cvvField.length !== 3
-                  ? "CVV must be 3 digits long"
-                  : "CVV is valid"}
-              </div>
-            )}
-          </label>
-        </div>
-      </div>
-
-      <div>
-        <button
-          onClick={() => {
-            if (validateFields()) {
-              handleCheckout();
-            }
-          }}
-          disabled={loading}
-          className={`mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue relative ${
-            loading ? "cursor-not-allowed" : ""
-          } w-full`}
-          data-cy="checkout-btn"
-        >
-          {/* White spinner */}
-          {loading && (
-            <div
-              data-cy={loading ? "loading" : "not-loading"}
-              className="absolute top-1/2 ms-4 transform -translate-x-1/2 -translate-y-1/2"
-            >
-              <div className="border-t-4 border-white-700 border-solid h-6 w-6 rounded-full animate-spin"></div>
-            </div>
-          )}
-
-          {loading ? "Placing Order..." : "Checkout"}
-        </button>
-
-        {!loading && showSuccess && (
-          <p
-            // style={{ display: showSuccess && !loading ? "block" : "none" }}
-            className={`block bg-green-500 text-white font-bold p-2 rounded mt-4 w-full text-center ${
-              showSuccess && !loading ? "fade-in" : "fade-out"
-            }`}
-          >
-            <span>Order placed successfully !</span>
-          </p>
-        )}
-
-        {/* Other elements */}
-      </div>
+      <CheckOutBtn
+        {...{
+          handleCheckout,
+          showSuccess,
+          validateFields,
+          loading,
+        }}
+      />
 
       {isError && <p className="text-red-500">Error: {error.message}</p>}
-      {/* <>
-        {showModal && (
-          <Modal message={modalMessage} onClose={handleModalClose} />
-        )}
-      </> */}
+      <>{!loading && showSuccess && <Modal />}</>
     </div>
   );
 };
