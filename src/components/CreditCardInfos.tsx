@@ -251,7 +251,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
             // If successful, you might want to handle the result accordingly
             if (result && result.success) {
               // Handle success (e.g., show a success message)
-              console.log(result.message);
+              console.log(result.message, "result here");
 
               // setShowSuccess(true);
             }

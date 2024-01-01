@@ -1,5 +1,5 @@
 import { number } from "card-validator";
-import { FunctionComponent, useContext } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 import amex from "../assets/img/amex.svg";
 import mastercard from "../assets/img/mastercard.svg";
 import visa from "../assets/img/visa.svg";
@@ -38,6 +38,7 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
     cvv: cvvField,
     setCvv,
   } = useContext(CreditCardContext);
+  const [formattedCN, setFormattedCN] = useState("");
 
   const isValidCardNumber = (value: string): boolean => {
     const validation = number(value);
@@ -53,6 +54,8 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
 
   let is_length_15_or_16 =
     creditCardNumber.length === 16 || creditCardNumber.length === 15;
+  // (creditCardNumber && creditCardNumber.replace(/\s/g, "").length !== 16) ||
+  // (creditCardNumber && creditCardNumber.replace(/\s/g, "").length !== 15);
 
   return (
     <div className="card-details">
@@ -62,10 +65,11 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
       <div className="block mb-4 relative">
         <span className="text-gray-700">Card Number:</span>
         <input
+          // type={creditCardNumber ? "password" : "text"}
           type="text"
           inputMode="numeric"
           pattern="[0-9]*"
-          value={creditCardNumber}
+          value={formattedCN}
           onChange={(e) => {
             let inputValue = e.target.value;
             // Remove non-numeric characters
@@ -77,9 +81,15 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
             if (inputValue.length > 14 && getCardType(inputValue) === `amex`) {
               inputValue = inputValue.slice(0, 15);
             }
-
-            // setCardNumberValid(inputValue.length === 16);
+            const formattedValue = inputValue.replace(/(\d{4})/g, "$1 ").trim();
             setCardNumber(inputValue);
+            setFormattedCN(formattedValue);
+            // console.log(formattedCN, formattedCN.length, "formattedCN");
+            // console.log(
+            //   creditCardNumber,
+            //   creditCardNumber.length,
+            //   "creditCardNumber"
+            // );
           }}
           onBlur={() => handleBlur("cardNumber")}
           className={`w-full p-2 border ${

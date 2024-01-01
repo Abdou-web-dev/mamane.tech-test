@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { CreditCardContext } from "../context/CreditCardContext";
 import SelectedItems from "./SelectedItems";
 
@@ -10,6 +10,35 @@ export const Modal = ({
   showModal: boolean;
 }) => {
   const { selectedItems, orderData } = useContext(CreditCardContext);
+
+  useEffect(() => {
+    const closeModalOnOutsideClick = (event: MouseEvent) => {
+      // Check if the click is outside the modal content
+      const modalContent = document.querySelector(".modal-content");
+      if (modalContent && !modalContent.contains(event.target as Node)) {
+        setShowModal(false);
+      }
+    };
+
+    const closeModalOnEscapeKey = (event: KeyboardEvent) => {
+      // Check if the pressed key is the ESC key (key code 27)
+      if (event.key === "Escape") {
+        setShowModal(false);
+      }
+    };
+
+    // Attach event listeners when the modal is shown
+    if (showModal) {
+      document.addEventListener("mousedown", closeModalOnOutsideClick);
+      document.addEventListener("keydown", closeModalOnEscapeKey);
+    }
+
+    // Detach event listeners when the modal is hidden or component unmounts
+    return () => {
+      document.removeEventListener("mousedown", closeModalOnOutsideClick);
+      document.removeEventListener("keydown", closeModalOnEscapeKey);
+    };
+  }, [showModal, setShowModal]);
 
   return (
     <div
