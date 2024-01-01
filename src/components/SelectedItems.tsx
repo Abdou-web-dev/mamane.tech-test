@@ -7,10 +7,12 @@ export interface SelectedItemsProps {
     quantity: number;
     price: number;
   }[];
+  showModal?: boolean;
 }
 
 const SelectedItems: FunctionComponent<SelectedItemsProps> = ({
   selectedItems,
+  showModal,
 }: SelectedItemsProps) => {
   return (
     <div className="flex flex-col items-start space-y-10">
@@ -18,7 +20,9 @@ const SelectedItems: FunctionComponent<SelectedItemsProps> = ({
       {selectedItems.map((item, index) => (
         <div
           key={`${item.productId}-${index}`}
-          className="bg-white p-4 rounded-lg shadow-md w-64"
+          className={`p-4 rounded-lg shadow-md w-64 ${
+            !showModal ? "bg-white" : "bg-slate-200"
+          }`}
           data-cy={`product-item-${index}`}
         >
           {/* Product Name at the top left */}

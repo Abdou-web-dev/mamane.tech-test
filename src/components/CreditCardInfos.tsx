@@ -2,7 +2,7 @@ interface CreditCardInfosProps {}
 import { number } from "card-validator";
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { UseMutateFunction, useMutation } from "react-query";
-import { object, string } from "zod";
+import { object, string, z } from "zod";
 import { CreditCardContext } from "../context/CreditCardContext";
 import { CheckOutBtn } from "./CheckOutBtn";
 import { CustomerDetails } from "./CustomerDetails";
@@ -12,16 +12,47 @@ import "./styles.css";
 
 export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
   // I renamed some state variables inside this component , added Field word so that I can use them in zod validation...
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [emailValid, setEmailValid] = useState(true);
+  const [nameValid, setNameValid] = useState(true);
+  const [addressValid, setAddressValid] = useState(true);
+  const [cardNumberValid, setCardNumberValid] = useState(true);
+  const [cvvValid, setCvvValid] = useState(true);
+  const [monthValid, setMonthValid] = useState(true);
+  const [yearValid, setYearValid] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setIsLoading] = useState(false);
+
   const {
     name: nameField,
     email: emailField,
     address: addressField,
     cardNumber: creditCardNumber,
     cvv: cvvField,
-    error,
-    isError,
     orderData,
+    showModal,
+    setShowModal,
   } = useContext(CreditCardContext);
+
+  // Define your schema using Zod
+  const schema = object({
+    email: string().email(),
+    name: string(),
+    address: string(),
+    cardNumber: string().refine((value) => isValidCardNumber(value), {
+      message: "Invalid credit card number",
+    }),
+    cvv: string().refine((value) => value.length === 3, {
+      message: "CVV must be 3 digits",
+    }),
+    expirationDate: z.object({
+      month: z.string(),
+      year: z.string(),
+      // month: z.date(),
+      // year: z.date(),
+    }),
+  });
 
   const formData = {
     email: emailField,
@@ -29,22 +60,20 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     cardNumber: creditCardNumber,
     address: addressField,
     cvv: cvvField,
+    expirationDate: {
+      month: selectedMonth,
+      year: selectedYear,
+    },
     // other fields...
   };
 
-  // valid CN : 374200000000004
-
-  const [emailValid, setEmailValid] = useState(true);
-  const [nameValid, setNameValid] = useState(true);
-  const [addressValid, setAddressValid] = useState(true);
-  const [cardNumberValid, setCardNumberValid] = useState(true);
-  // const [expirationDateValid, setExpirationDateValid] = useState(true);
-  const [cvvValid, setCvvValid] = useState(true);
-  // **********
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [monthValid, setMonthValid] = useState(true);
-  const [yearValid, setYearValid] = useState(true);
+  const emailSchema = object({
+    email: string().email(),
+  });
+  const emailData = {
+    email: emailField,
+  };
+  const emailValidationResult = emailSchema.safeParse(emailData);
 
   function validateFields(): boolean {
     // Reset validation state
@@ -52,7 +81,6 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     setNameValid(true);
     setAddressValid(true);
     setCardNumberValid(true);
-    // setExpirationDateValid(true);
     setCvvValid(true);
     setMonthValid(true);
     setYearValid(true);
@@ -70,9 +98,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     if (!creditCardNumber) {
       setCardNumberValid(false);
     }
-    // if (!expirationDate) {
-    //   // setExpirationDateValid(false);
-    // }
+
     if (!cvvField) {
       setCvvValid(false);
     }
@@ -91,82 +117,57 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       nameValid &&
       addressValid &&
       cardNumberValid &&
-      // expirationDateValid &&
       cvvValid
     );
   }
 
-  // Outside the component or as part of your state management
+  // to make the code more maintainable and less error-prone in case of typos or changes to field names.
+  // Constants or Enums
+  const FieldNames = {
+    EMAIL: "email",
+    NAME: "name",
+    ADDRESS: "address",
+    CARD_NUMBER: "cardNumber",
+    CVV: "cvv",
+    MONTH: "month",
+    YEAR: "year",
+  };
 
   // To remove the red border as soon as the user types something in the field
   const handleBlur = (field: string) => {
     switch (field) {
-      case "email":
+      // case "email":
+      case FieldNames.EMAIL:
         setEmailValid(!!emailField); // Set to true if email is not empty
         break;
       // !!email: The !! is a JavaScript idiom to convert a value to a boolean. It's essentially a double negation. If email is a truthy value (not empty or not falsy), !!email will be true. If email is an empty string or a falsy value, !!email will be false.
-      case "name":
+      case FieldNames.NAME:
         setNameValid(!!nameField);
         break;
-      case "address":
+      case FieldNames.ADDRESS:
         setAddressValid(!!addressField);
         break;
-      case "cardNumber":
+      case FieldNames.CARD_NUMBER:
         setCardNumberValid(!!creditCardNumber);
-        // setCardNumberValid(creditCardNumber.length === 16);
-        // if (creditCardNumber.length !== 16) {
-        //   setModalMessage("Credit card number must be 16 digits.");
-        //   setShowModal(true);
-        // }
         break;
-      case "expirationDate":
-        // setExpirationDateValid(!!expirationDate);
-        break;
-      case "cvv":
+      case FieldNames.CVV:
         setCvvValid(!!cvvField);
         break;
-      case "month":
+      case FieldNames.MONTH:
         setMonthValid(!!selectedMonth);
         break;
-      case "year":
+      case FieldNames.YEAR:
         setYearValid(!!selectedYear);
         break;
       default:
         break;
     }
   };
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [loading, setIsLoading] = useState(false);
 
   const isValidCardNumber = (value: string): boolean => {
     const validation = number(value);
     return validation.isValid;
   };
-
-  // Define your schema using Zod
-  const schema = object({
-    email: string().email(),
-    name: string(),
-    address: string(),
-    cardNumber: string().refine((value) => isValidCardNumber(value), {
-      message: "Invalid credit card number",
-    }),
-    cvv: string().refine((value) => value.length === 3, {
-      message: "CVV must be 3 digits",
-    }),
-    // expirationDate: z.object({
-    //   month: z.string(),
-    //   year: z.string(),
-    // }),
-  });
-
-  const emailSchema = object({
-    email: string().email(),
-  });
-  const emailData = {
-    email: emailField,
-  };
-  const emailValidationResult = emailSchema.safeParse(emailData);
 
   const postOrder = async (orderData: OrderDataType) => {
     console.log("Sending POST request with data:", orderData);
@@ -186,6 +187,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       );
       // Assuming you want to show the success message upon successful checkout
       setShowSuccess(true);
+      setShowModal(true);
       // Delay to hide the success message after 3 seconds
       setTimeout(() => {
         setShowSuccess(false);
@@ -236,7 +238,6 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
         // Validation succeeded
         console.log("Valid user credentials and card infos!");
 
-        // Proceed with the checkout process
         setIsLoading(true);
 
         // Introduce a delay before placing the order
@@ -318,8 +319,8 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
         }}
       />
 
-      {isError && <p className="text-red-500">Error: {error.message}</p>}
-      <>{!loading && showSuccess && <Modal />}</>
+      <>{showModal && <Modal {...{ setShowModal, showModal }} />}</>
+      {/* {isError && <p className="text-red-500">Error: {error.message}</p>} */}
     </div>
   );
 };

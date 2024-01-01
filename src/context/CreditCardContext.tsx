@@ -11,13 +11,6 @@ import {
 let productIdCounter = 0;
 
 export interface CreditCardContextType {
-  // postOrder: Promise<
-  //   | {
-  //       success: boolean;
-  //       message: string;
-  //     }
-  //   | undefined
-  // >;
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
   email: string;
@@ -42,7 +35,6 @@ export interface CreditCardContextType {
   // loading: boolean;
   isError: boolean;
   isSuccess: boolean;
-
   data:
     | {
         success: boolean;
@@ -50,6 +42,8 @@ export interface CreditCardContextType {
       }
     | undefined;
   error: any;
+  showModal: boolean;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   // showSuccess: boolean;
 }
 
@@ -93,6 +87,8 @@ export const CreditCardContext = createContext<CreditCardContextType>({
     message: "",
   },
   error: "",
+  setShowModal: () => {},
+  showModal: false,
 });
 
 export const CreditCardContextProvider = ({
@@ -114,6 +110,7 @@ export const CreditCardContextProvider = ({
       price: 0,
     },
   ]);
+  const [showModal, setShowModal] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -292,6 +289,8 @@ export const CreditCardContextProvider = ({
         isSuccess,
         error,
         data,
+        setShowModal,
+        showModal,
         // loading,:
         // showSuccess,
       }}

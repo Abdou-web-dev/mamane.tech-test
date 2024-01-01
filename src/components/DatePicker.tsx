@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./styles.css";
 
-const ExpiryDateDropdown = ({
+export const ExpiryDateDropdown = ({
   selectedMonth,
   setSelectedMonth,
   selectedYear,
@@ -46,7 +46,6 @@ const ExpiryDateDropdown = ({
         className={`w-full p-2 border ${
           !monthValid ? "border-red-500" : "border-gray-300"
         } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
-        // className={`${!monthValid ? "border-red-500" : "border-gray-300"}`}
         value={selectedMonth}
         onChange={handleMonthChange}
         onBlur={() => {
@@ -82,11 +81,15 @@ const ExpiryDateDropdown = ({
         onFocus={() => setIsYearSelectOpen(true)}
         onClick={() => handleBlur("year")}
       >
-        <option value="" disabled className="text-gray-500 mb-2">
+        <option value="" disabled className="text-gray-500 mb-2 ">
           {!isYearSelectOpen ? "Year" : ""}
         </option>
         {years.map((year) => (
-          <option key={year} value={year}>
+          <option
+            key={year}
+            value={year}
+            className="text-gray-500 mb-2 text-xl"
+          >
             {year}
           </option>
         ))}
@@ -94,5 +97,3 @@ const ExpiryDateDropdown = ({
     </div>
   );
 };
-
-export default ExpiryDateDropdown;

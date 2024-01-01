@@ -26,6 +26,29 @@ const productNames = [
   "Wireless Earbuds",
 ];
 
+export const getCardType = (cardNumber: string) => {
+  // Remove non-numeric characters
+  const cleanNumber = cardNumber.replace(/\D/g, "");
+
+  // Define patterns for different card types
+  const patterns = {
+    visa: /^4/,
+    mastercard: /^5[1-5]/,
+    amex: /^3[47]/,
+    // Add more patterns as needed
+  };
+
+  // Check the patterns to determine the card type
+  for (const [type, pattern] of Object.entries(patterns)) {
+    if (pattern.test(cleanNumber)) {
+      return type;
+    }
+  }
+
+  // Default to unknown if no pattern matches
+  return "unknown";
+};
+
 export function generateRandomProductName() {
   const randomProductName =
     productNames[Math.floor(Math.random() * productNames.length)];

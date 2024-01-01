@@ -1,7 +1,12 @@
 import { number } from "card-validator";
 import { FunctionComponent, useContext } from "react";
+import amex from "../assets/img/amex.svg";
+import mastercard from "../assets/img/mastercard.svg";
+import visa from "../assets/img/visa.svg";
+
 import { CreditCardContext } from "../context/CreditCardContext";
-import ExpiryDateDropdown from "./DatePicker";
+import { getCardType } from "../utils/helpers";
+import { ExpiryDateDropdown } from "./DatePicker";
 
 interface PaymentMethodProps {
   cvvValid: boolean;
@@ -26,7 +31,6 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
   monthValid,
   yearValid,
   cardNumberValid,
-  setCardNumberValid,
 }) => {
   const {
     cardNumber: creditCardNumber,
@@ -40,12 +44,22 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
     return validation.isValid;
   };
 
+  // Now, you can use the cardType to display the corresponding logo
+
+  let is_visa_or_MC_amex =
+    getCardType(creditCardNumber) === `mastercard` ||
+    getCardType(creditCardNumber) === `amex` ||
+    getCardType(creditCardNumber) === `visa`;
+
+  let is_length_15_or_16 =
+    creditCardNumber.length === 16 || creditCardNumber.length === 15;
+
   return (
     <div className="card-details">
       <h2 className="text-xl font-bold mb-4 text-blue-600">Payment Method</h2>
 
       {/* Card Number */}
-      <label className="block mb-4">
+      <div className="block mb-4 relative">
         <span className="text-gray-700">Card Number:</span>
         <input
           type="text"
@@ -60,8 +74,11 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
             if (inputValue.length > 16) {
               inputValue = inputValue.slice(0, 16);
             }
+            if (inputValue.length > 14 && getCardType(inputValue) === `amex`) {
+              inputValue = inputValue.slice(0, 15);
+            }
 
-            setCardNumberValid(inputValue.length === 16);
+            // setCardNumberValid(inputValue.length === 16);
             setCardNumber(inputValue);
           }}
           onBlur={() => handleBlur("cardNumber")}
@@ -69,12 +86,39 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
             !cardNumberValid ? "border-red-500" : "border-gray-300"
           } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
         />
-        {creditCardNumber && creditCardNumber.length !== 16 && (
-          <div className="text-red-500">
-            Credit card number must be 16 digits.
+        {creditCardNumber && (
+          <div className="absolute right-2 top-2">
+            {creditCardNumber &&
+              is_visa_or_MC_amex &&
+              isValidCardNumber(creditCardNumber) && (
+                <img
+                  src={
+                    getCardType(creditCardNumber) === `mastercard`
+                      ? mastercard
+                      : getCardType(creditCardNumber) === `visa`
+                      ? visa
+                      : getCardType(creditCardNumber) === `amex`
+                      ? amex
+                      : ""
+                  }
+                  width={"30px"}
+                  alt="logo"
+                />
+              )}
           </div>
         )}
-        {creditCardNumber && creditCardNumber.length === 16 && (
+        {/* 5425230000004415  MC*/}
+        {/* 4456530000001005 VISA*/}
+        {/* 374200000000004 AMEX*/}
+        {/* American Express credit card numbers have 15 digits, while credit cards affiliated with other major payment networks such as Visa and Mastercard have card numbers that contain 16 digits.8 mai 2023 */}
+
+        {creditCardNumber && creditCardNumber.length !== 16 && (
+          <div className="text-red-500">
+            {getCardType(creditCardNumber) !== `amex` &&
+              "Credit card number must be 16 digits."}
+          </div>
+        )}
+        {creditCardNumber && is_length_15_or_16 && (
           <div
             className={`text-sm ${
               isValidCardNumber(creditCardNumber)
@@ -87,7 +131,7 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
               : "Valid credit card number"}
           </div>
         )}
-      </label>
+      </div>
 
       {/* Expiration Date and CVV */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
