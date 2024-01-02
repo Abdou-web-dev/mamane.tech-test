@@ -28,7 +28,7 @@ export const CustomSelect = ({
   // const years = Array.from({ length: 10 }, (_, index) => currentYear + index);
   // Similar to the months array, this line generates an array of years. It creates an array with a length of 10, and the mapping function adds the current year (currentYear) to the index for each element. This results in an array of 10 consecutive years starting from the current year.
 
-  const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const [isSelectOpen, setIsSelectOpen] = useState(false); //===  const [, setIsSelectOpen] = useState(false);
 
   const handleValueChange = (event: any) => {
     setSelectedValue(event.target.value);

@@ -1,19 +1,15 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FunctionComponent, useContext } from "react";
 import amex from "../assets/img/amex.svg";
 import mastercard from "../assets/img/mastercard.svg";
 import visa from "../assets/img/visa.svg";
-
 import { CreditCardContext } from "../context/CreditCardContext";
 import { getCardType, isValidCardNumber } from "../utils/helpers";
 import { ExpiryDateDropdown } from "./DatePicker";
+import "./styles.css";
 
 interface PaymentMethodProps {
   cvvValid: boolean;
   handleBlur: (field: string) => void;
-  selectedMonth: string;
-  setSelectedMonth: React.Dispatch<React.SetStateAction<string>>;
-  selectedYear: string;
-  setSelectedYear: React.Dispatch<React.SetStateAction<string>>;
   monthValid: boolean;
   yearValid: boolean;
   cardNumberValid: boolean;
@@ -23,10 +19,6 @@ interface PaymentMethodProps {
 export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
   cvvValid,
   handleBlur,
-  selectedMonth,
-  setSelectedMonth,
-  selectedYear,
-  setSelectedYear,
   monthValid,
   yearValid,
   cardNumberValid,
@@ -38,10 +30,15 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
     setCvv,
     showRedBorder,
     showModal,
+    selectedMonth,
+    setSelectedMonth,
+    selectedYear,
+    setSelectedYear,
+    formattedCN,
+    setFormattedCN,
   } = useContext(CreditCardContext);
-  const [formattedCN, setFormattedCN] = useState("");
 
-  // Now, you can use the cardType to display the corresponding logo
+  // Now, I can use the cardType to display the corresponding logo
 
   let is_visa_or_MC_amex =
     getCardType(creditCardNumber) === `mastercard` ||
@@ -50,8 +47,6 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
 
   let is_length_15_or_16 =
     creditCardNumber.length === 16 || creditCardNumber.length === 15;
-  // (creditCardNumber && creditCardNumber.replace(/\s/g, "").length !== 16) ||
-  // (creditCardNumber && creditCardNumber.replace(/\s/g, "").length !== 15);
 
   return (
     <div className="card-details">
@@ -82,12 +77,6 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
             const formattedValue = inputValue.replace(/(\d{4})/g, "$1 ").trim();
             setCardNumber(inputValue);
             setFormattedCN(formattedValue);
-            // console.log(formattedCN, formattedCN.length, "formattedCN");
-            // console.log(
-            //   creditCardNumber,
-            //   creditCardNumber.length,
-            //   "creditCardNumber"
-            // );
           }}
           onBlur={() => handleBlur("cardNumber")}
           className={`w-full p-2 border ${
@@ -144,7 +133,8 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
       </div>
 
       {/* Expiration Date and CVV */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* <div className="Expiry-date-dropdown grid md:grid-cols-1 grid-cols-2 gap-4"> */}
+      <div className="date-and-cvv grid grid-cols-1 gap-4">
         <ExpiryDateDropdown
           {...{
             selectedMonth,
@@ -156,11 +146,12 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
             yearValid,
           }}
         />
-
+        {/* <br /> */}
         {/* CVV */}
         <label
           // className="block z-50"
-          className={`block ${showModal ? "" : "z-50"}`}
+          className={`cvv-block block ${showModal ? "" : "z-50"}
+          `}
         >
           <span className="text-gray-700">CVV:</span>
           <input

@@ -13,8 +13,7 @@ interface CreditCardInfosProps {}
 
 export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
   // I renamed some state variables inside this component , added Field word so that I can use them in zod validation...
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
+
   const [emailValid, setEmailValid] = useState(true);
   const [nameValid, setNameValid] = useState(true);
   const [addressValid, setAddressValid] = useState(true);
@@ -35,6 +34,8 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     showModal,
     setShowModal,
     setShowRedBorder,
+    selectedMonth,
+    selectedYear,
   } = useContext(CreditCardContext);
 
   // Define your schema using Zod
@@ -283,7 +284,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
   }, [nameField, addressField, emailField]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div className="Customer-details grid grid-cols-1 md:grid-cols-2 gap-12">
       {/* Customer Details */}
       <CustomerDetails
         {...{
@@ -300,10 +301,6 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
         {...{
           cvvValid,
           handleBlur,
-          selectedMonth,
-          setSelectedMonth,
-          selectedYear,
-          setSelectedYear,
           monthValid,
           yearValid,
           cardNumberValid,

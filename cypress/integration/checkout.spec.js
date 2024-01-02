@@ -106,3 +106,96 @@ describe("Checkout Functionality", () => {
     cy.contains("Order placed successfully").should("exist");
   });
 });
+
+
+// *********************************
+
+Certainly! Let's go through each of the scenarios you mentioned:
+
+Additional Negative Scenarios:
+Invalid Email:
+
+Test attempting to place an order with an invalid email.
+For example, use an email without the '@' symbol.
+Incomplete Credit Card Details:
+
+Test attempting to place an order with incomplete credit card details.
+For example, leave out the CVV or expiration date.
+Handling Loading and Non-Loading States:
+Loading State:
+Test scenarios where the loading state is triggered (e.g., clicking the checkout button).
+Ensure that elements indicative of loading are visible.
+Non-Loading State:
+Test scenarios where the loading state should disappear.
+Ensure that elements indicative of loading are not visible.
+Testing Asynchronous Behavior:
+Waiting for Elements:
+Test scenarios where you need to wait for certain elements to appear or disappear.
+For example, wait for the success message to appear after a successful order placement.
+Checking for Absence of Success Message:
+Order Not Placed Successfully:
+Test scenarios where the order is not placed successfully.
+Ensure that the success message is not present or is replaced by an error message.
+Example Test Cases:
+javascript
+Copy code
+describe("Additional Test Scenarios", () => {
+  it("Should handle invalid email during checkout", () => {
+    // Fill in the necessary details with an invalid email
+    cy.get("[data-cy=email]").type("invalidemail");
+
+    // Click the checkout button
+    cy.get("[data-cy=checkout-btn]").click();
+
+    // Ensure an appropriate error message is displayed
+    cy.contains("Invalid email address").should("exist");
+  });
+
+  it("Should handle incomplete credit card details during checkout", () => {
+    // Fill in the necessary details with incomplete credit card details
+    cy.get("[data-cy=cvv]").type("123"); // Incomplete CVV
+
+    // Click the checkout button
+    cy.get("[data-cy=checkout-btn]").click();
+
+    // Ensure an appropriate error message is displayed
+    cy.contains("Incomplete credit card details").should("exist");
+  });
+
+  it("Should handle loading and non-loading states during checkout", () => {
+    // Click the checkout button
+    cy.get("[data-cy=checkout-btn]").click();
+
+    // Ensure loading state is visible
+    cy.get("[data-cy=loading]").should("be.visible");
+
+    // Wait for loading state to disappear
+    cy.get("[data-cy=not-loading]").should("not.exist");
+  });
+
+  it("Should wait for success message after successful order placement", () => {
+    // Fill in valid details
+    // ...
+
+    // Click the checkout button
+    cy.get("[data-cy=checkout-btn]").click();
+
+    // Wait for success message to appear
+    cy.contains("Order placed successfully").should("exist");
+  });
+
+  it("Should handle scenarios where the order is not placed successfully", () => {
+    // Simulate a scenario where the order fails (e.g., mock server response)
+    // ...
+
+    // Click the checkout button
+    cy.get("[data-cy=checkout-btn]").click();
+
+    // Ensure the absence of the success message
+    cy.contains("Order placed successfully").should("not.exist");
+
+    // Ensure an appropriate error message is displayed
+    cy.contains("Failed to place order").should("exist");
+  });
+});
+// Feel free to adapt these test cases based on the actual behavior of your application and how error messages are handled.

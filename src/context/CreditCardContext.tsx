@@ -46,6 +46,12 @@ export interface CreditCardContextType {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   setShowRedBorder: React.Dispatch<React.SetStateAction<boolean>>;
   showRedBorder: boolean;
+  selectedMonth: string;
+  setSelectedMonth: React.Dispatch<React.SetStateAction<string>>;
+  selectedYear: string;
+  setSelectedYear: React.Dispatch<React.SetStateAction<string>>;
+  formattedCN: string;
+  setFormattedCN: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const CreditCardContext = createContext<CreditCardContextType>({
@@ -92,6 +98,12 @@ export const CreditCardContext = createContext<CreditCardContextType>({
   showModal: false,
   showRedBorder: false,
   setShowRedBorder: () => {},
+  selectedMonth: "",
+  selectedYear: "",
+  setSelectedMonth: () => {},
+  setSelectedYear: () => {},
+  formattedCN: "",
+  setFormattedCN: () => {},
 });
 
 export const CreditCardContextProvider = ({
@@ -123,6 +135,11 @@ export const CreditCardContextProvider = ({
   const [expirationDate, setExpirationDate] = useState("");
   const [cvv, setCvv] = useState("");
   const [showRedBorder, setShowRedBorder] = useState(false);
+
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+
+  const [formattedCN, setFormattedCN] = useState("");
 
   const customerDetails = {
     name: name,
@@ -296,9 +313,13 @@ export const CreditCardContextProvider = ({
         setShowModal,
         showModal,
         showRedBorder,
+        selectedMonth,
+        setSelectedMonth,
+        selectedYear,
+        setSelectedYear,
         setShowRedBorder,
-        // loading,:
-        // showSuccess,
+        formattedCN,
+        setFormattedCN,
       }}
     >
       {children}
