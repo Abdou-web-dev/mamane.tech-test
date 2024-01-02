@@ -1,3 +1,5 @@
+import { number } from "card-validator";
+
 export function generateRandomPrice() {
   // Generate a random float between 1.00 and 5000
   return (Math.random() * (200 - 1) + 1).toFixed(2);
@@ -54,3 +56,8 @@ export function generateRandomProductName() {
     productNames[Math.floor(Math.random() * productNames.length)];
   return randomProductName;
 }
+
+export const isValidCardNumber = (value: string): boolean => {
+  const validation = number(value);
+  return validation.isValid;
+};

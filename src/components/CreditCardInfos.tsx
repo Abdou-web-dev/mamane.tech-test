@@ -1,14 +1,15 @@
-interface CreditCardInfosProps {}
-import { number } from "card-validator";
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { UseMutateFunction, useMutation } from "react-query";
 import { object, string, z } from "zod";
 import { CreditCardContext } from "../context/CreditCardContext";
+import { isValidCardNumber } from "../utils/helpers";
 import { CheckOutBtn } from "./CheckOutBtn";
 import { CustomerDetails } from "./CustomerDetails";
 import { Modal } from "./MsgModal";
 import { PaymentMethod } from "./PaymentMethod";
 import "./styles.css";
+
+interface CreditCardInfosProps {}
 
 export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
   // I renamed some state variables inside this component , added Field word so that I can use them in zod validation...
@@ -33,6 +34,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     orderData,
     showModal,
     setShowModal,
+    setShowRedBorder,
   } = useContext(CreditCardContext);
 
   // Define your schema using Zod
@@ -164,11 +166,6 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     }
   };
 
-  const isValidCardNumber = (value: string): boolean => {
-    const validation = number(value);
-    return validation.isValid;
-  };
-
   const postOrder = async (orderData: OrderDataType) => {
     console.log("Sending POST request with data:", orderData);
 
@@ -271,6 +268,11 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       // Handle validation errors
       console.error("Validation error:", error.errors);
       return;
+    }
+    if (!isValidCardNumber(creditCardNumber) && creditCardNumber) {
+      setShowRedBorder(true);
+    } else {
+      setShowRedBorder(false);
     }
   };
 

@@ -44,7 +44,8 @@ export interface CreditCardContextType {
   error: any;
   showModal: boolean;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-  // showSuccess: boolean;
+  setShowRedBorder: React.Dispatch<React.SetStateAction<boolean>>;
+  showRedBorder: boolean;
 }
 
 export const CreditCardContext = createContext<CreditCardContextType>({
@@ -89,6 +90,8 @@ export const CreditCardContext = createContext<CreditCardContextType>({
   error: "",
   setShowModal: () => {},
   showModal: false,
+  showRedBorder: false,
+  setShowRedBorder: () => {},
 });
 
 export const CreditCardContextProvider = ({
@@ -119,6 +122,7 @@ export const CreditCardContextProvider = ({
   const [cardNumber, setCardNumber] = useState("");
   const [expirationDate, setExpirationDate] = useState("");
   const [cvv, setCvv] = useState("");
+  const [showRedBorder, setShowRedBorder] = useState(false);
 
   const customerDetails = {
     name: name,
@@ -291,6 +295,8 @@ export const CreditCardContextProvider = ({
         data,
         setShowModal,
         showModal,
+        showRedBorder,
+        setShowRedBorder,
         // loading,:
         // showSuccess,
       }}

@@ -1,11 +1,10 @@
-import { number } from "card-validator";
 import { FunctionComponent, useContext, useState } from "react";
 import amex from "../assets/img/amex.svg";
 import mastercard from "../assets/img/mastercard.svg";
 import visa from "../assets/img/visa.svg";
 
 import { CreditCardContext } from "../context/CreditCardContext";
-import { getCardType } from "../utils/helpers";
+import { getCardType, isValidCardNumber } from "../utils/helpers";
 import { ExpiryDateDropdown } from "./DatePicker";
 
 interface PaymentMethodProps {
@@ -37,13 +36,10 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
     setCardNumber,
     cvv: cvvField,
     setCvv,
+    showRedBorder,
+    showModal,
   } = useContext(CreditCardContext);
   const [formattedCN, setFormattedCN] = useState("");
-
-  const isValidCardNumber = (value: string): boolean => {
-    const validation = number(value);
-    return validation.isValid;
-  };
 
   // Now, you can use the cardType to display the corresponding logo
 
@@ -81,6 +77,8 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
             if (inputValue.length > 14 && getCardType(inputValue) === `amex`) {
               inputValue = inputValue.slice(0, 15);
             }
+            // Implement formatting logic (e.g., adding spaces)
+
             const formattedValue = inputValue.replace(/(\d{4})/g, "$1 ").trim();
             setCardNumber(inputValue);
             setFormattedCN(formattedValue);
@@ -94,7 +92,9 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
           onBlur={() => handleBlur("cardNumber")}
           className={`w-full p-2 border ${
             !cardNumberValid ? "border-red-500" : "border-gray-300"
-          } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
+          } 
+          ${showRedBorder ? "border-red-400 border-2" : "border-gray-300"} 
+          rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
         />
         {creditCardNumber && (
           <div className="absolute right-2 top-2">
@@ -158,7 +158,10 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
         />
 
         {/* CVV */}
-        <label className="block">
+        <label
+          // className="block z-50"
+          className={`block ${showModal ? "" : "z-50"}`}
+        >
           <span className="text-gray-700">CVV:</span>
           <input
             type={cvvField ? "password" : "text"}

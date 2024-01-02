@@ -154,5 +154,6 @@ select.border-gray-300 {
   border: 1px solid rgba(79, 59, 59, 0.343);
 }
 .custom-dropdown select option {
-  font-size: 15.5px;
+  font-size: 16.5px;
+  /* margin-bottom: 8px; */
 }

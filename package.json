@@ -12,6 +12,7 @@
     "cypress:run": "cypress run"
   },
   "dependencies": {
+    "antd": "^5.12.7",
     "card-validator": "^9.0.0",
     "postcss": "^8.4.32",
     "react": "^18.2.0",
@@ -27,6 +28,7 @@
     "@typescript-eslint/parser": "^6.14.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
+    "cypress": "^13.6.2",
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
