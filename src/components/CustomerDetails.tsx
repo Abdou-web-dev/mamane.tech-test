@@ -34,8 +34,14 @@ export const CustomerDetails: FunctionComponent<CustomerDetailsProps> = ({
   } = useContext(CreditCardContext);
 
   return (
-    <div className="">
-      <h2 className="text-xl font-bold mb-4 text-blue-600">Customer Details</h2>
+    <div className="customer-details-container">
+      <h2
+        className="
+      text-2xl lg:text-xl
+      font-bold mb-4 text-blue-600"
+      >
+        Customer Details
+      </h2>
 
       {/* Email */}
       <label className="block mb-4">
@@ -50,6 +56,7 @@ export const CustomerDetails: FunctionComponent<CustomerDetailsProps> = ({
           value={emailField}
           onChange={(e) => setEmail(e.target.value)}
           onBlur={() => handleBlur("email")}
+          // data-cy={"email"}
         />
 
         {emailField && (

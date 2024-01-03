@@ -20,7 +20,7 @@ interface PaymentMethod {
   type: string;
   cardNumber: string;
   expirationDate: string;
-  cvv: string;
+  cvc: string;
 }
 
 interface OrderDataType {

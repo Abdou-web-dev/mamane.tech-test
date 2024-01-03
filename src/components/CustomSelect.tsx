@@ -62,6 +62,9 @@ export const CustomSelect = ({
             setIsSelectOpen(true);
             // console.log(isSelectOpen, "isSelectOpen");
           }}
+          data-cy={
+            value === "month" ? "cy-month" : value === "year" ? "cy-year" : ""
+          }
         >
           <option className="text-xl mb-2" value="" disabled>
             {label}

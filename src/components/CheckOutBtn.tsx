@@ -6,6 +6,7 @@ interface CheckOutBtnProps {
   handleCheckout: () => Promise<void>;
   showSuccess: boolean;
   loading: boolean;
+  showFailure: boolean;
 }
 
 export const CheckOutBtn: FunctionComponent<CheckOutBtnProps> = ({
@@ -13,6 +14,7 @@ export const CheckOutBtn: FunctionComponent<CheckOutBtnProps> = ({
   handleCheckout,
   showSuccess,
   loading,
+  showFailure,
 }) => {
   const {
     name: nameField,
@@ -20,15 +22,15 @@ export const CheckOutBtn: FunctionComponent<CheckOutBtnProps> = ({
     address: addressField,
     // cardNumber: creditCardNumber,
     formattedCN,
-    setFormattedCN,
-    cvv: cvvField,
+    cvc: cvcField,
     selectedMonth,
     selectedYear,
+    setFormattedCN,
     setName,
     setEmail,
     setAddress,
     setCardNumber,
-    setCvv,
+    setCvc,
     setSelectedMonth,
     setSelectedYear,
   } = useContext(CreditCardContext);
@@ -40,7 +42,7 @@ export const CheckOutBtn: FunctionComponent<CheckOutBtnProps> = ({
     setAddress("");
     setFormattedCN("");
     setCardNumber("");
-    setCvv("");
+    setCvc("");
     setSelectedMonth("");
     setSelectedYear("");
   }
@@ -50,7 +52,7 @@ export const CheckOutBtn: FunctionComponent<CheckOutBtnProps> = ({
     emailField ||
     addressField ||
     formattedCN ||
-    cvvField ||
+    cvcField ||
     selectedMonth ||
     selectedYear
       ? true
@@ -58,8 +60,8 @@ export const CheckOutBtn: FunctionComponent<CheckOutBtnProps> = ({
 
   return (
     // Using min-w-80 to set a minimum width for the container is a good solution. This way, the container won't shrink below a certain width, and the "Checkout" button can retain the desired width while both buttons are displayed next to each other.
-    <div>
-      <div className="flex gap-3 min-w-80">
+    <div className="checkout-reset-btns-container">
+      <div className="flex gap-3 min-w-80 checkout-reset-btns-inner ">
         <button
           className={`mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue relative ${
             loading ? "cursor-not-allowed" : ""
@@ -107,6 +109,17 @@ export const CheckOutBtn: FunctionComponent<CheckOutBtnProps> = ({
           }`}
         >
           <span>Order placed successfully !</span>
+        </p>
+      )}
+
+      {showFailure && (
+        <p
+          // style={{ display: showSuccess && !loading ? "block" : "none" }}
+          className={`block bg-red-500 text-white font-bold p-2 rounded mt-4 w-full text-center ${
+            showFailure && !loading ? "fade-in" : "fade-out"
+          }`}
+        >
+          <span>Failed to place order !</span>
         </p>
       )}
     </div>

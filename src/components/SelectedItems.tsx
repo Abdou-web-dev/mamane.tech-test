@@ -17,26 +17,35 @@ const SelectedItems: FunctionComponent<SelectedItemsProps> = ({
   return (
     <div className="flex flex-col items-start space-y-10">
       {/* Selected Items as Cards */}
-      {selectedItems.map((item, index) => (
+      {selectedItems?.map((item, index) => (
         <div
-          key={`${item.productId}-${index}`}
           className={`p-4 rounded-lg shadow-md w-64 ${
             !showModal ? "bg-white" : "bg-slate-200"
           }`}
+          key={`${item.productId}-${index}`}
           data-cy={`product-item-${index}`}
         >
           {/* Product Name at the top left */}
-          <div className="text-xl font-bold mb-2" data-cy="product-name">
+          <div
+            className="text-2xl lg:text-xl font-bold mb-2"
+            data-cy="product-name"
+          >
             {item.name}
           </div>
 
           {/* Quantity underneath the product name */}
-          <div className="text-gray-600 mb-2" data-cy="product-quantity">
+          <div
+            className="text-gray-600 text-2xl lg:text-xl mb-2"
+            data-cy="product-quantity"
+          >
             Quantity: {item.quantity}
           </div>
 
           {/* Price centered and at the right */}
-          <div className="text-xl font-bold text-right" data-cy="product-price">
+          <div
+            className=" font-bold text-2xl lg:text-xl text-right"
+            data-cy="product-price"
+          >
             $ {item.price.toFixed(2)}
           </div>
         </div>

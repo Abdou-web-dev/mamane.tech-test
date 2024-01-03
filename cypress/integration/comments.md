@@ -8,7 +8,7 @@ Positive Scenarios:
 
 # I've checked the appearance of product items and their details.
 
-# I've clicked on the address and CVV input fields and checked their attributes.
+# I've clicked on the address and CVC input fields and checked their attributes.
 
 # I've triggered the checkout process and checked for loading and non-loading states.
 
@@ -22,7 +22,7 @@ Negative Scenarios:
 
 # I've attempted to click the checkout button without filling in all the required fields.
 
-# I've checked the appearance of error states, such as the border becoming red for empty email and invalid CVV.
+# I've checked the appearance of error states, such as the border becoming red for empty email and invalid CVC.
 
 <!-- ************************************** -->
 

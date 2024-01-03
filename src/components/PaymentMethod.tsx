@@ -8,7 +8,7 @@ import { ExpiryDateDropdown } from "./DatePicker";
 import "./styles.css";
 
 interface PaymentMethodProps {
-  cvvValid: boolean;
+  cvcValid: boolean;
   handleBlur: (field: string) => void;
   monthValid: boolean;
   yearValid: boolean;
@@ -17,7 +17,7 @@ interface PaymentMethodProps {
 }
 
 export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
-  cvvValid,
+  cvcValid,
   handleBlur,
   monthValid,
   yearValid,
@@ -26,8 +26,8 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
   const {
     cardNumber: creditCardNumber,
     setCardNumber,
-    cvv: cvvField,
-    setCvv,
+    cvc: cvcField, // Card Verification Code
+    setCvc,
     showRedBorder,
     showModal,
     selectedMonth,
@@ -49,7 +49,9 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
     creditCardNumber.length === 16 || creditCardNumber.length === 15;
 
   return (
-    <div className="card-details">
+    <div className="card-details-container">
+      {/* <div className="card-details min-w-80 lg:max-w-0"> */}
+
       <h2 className="text-xl font-bold mb-4 text-blue-600">Payment Method</h2>
 
       {/* Card Number */}
@@ -84,6 +86,7 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
           } 
           ${showRedBorder ? "border-red-400 border-2" : "border-gray-300"} 
           rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
+          data-cy="creditcard"
         />
         {creditCardNumber && (
           <div className="absolute right-2 top-2">
@@ -132,9 +135,9 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
         )}
       </div>
 
-      {/* Expiration Date and CVV */}
+      {/* Expiration Date and CVC */}
       {/* <div className="Expiry-date-dropdown grid md:grid-cols-1 grid-cols-2 gap-4"> */}
-      <div className="date-and-cvv grid grid-cols-1 gap-4">
+      <div className="date-and-cvc grid grid-cols-1 gap-4">
         <ExpiryDateDropdown
           {...{
             selectedMonth,
@@ -146,46 +149,45 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({
             yearValid,
           }}
         />
-        {/* <br /> */}
-        {/* CVV */}
+        {/* CVC */}
         <label
           // className="block z-50"
-          className={`cvv-block block ${showModal ? "" : "z-50"}
+          className={`cvc-block block ${showModal ? "" : "z-50"}
           `}
         >
-          <span className="text-gray-700">CVV:</span>
+          <span className="text-gray-700">CVC:</span>
           <input
-            type={cvvField ? "password" : "text"}
-            value={cvvField}
+            type={cvcField ? "password" : "text"}
+            value={cvcField}
             inputMode="numeric"
             pattern="[0-9]*"
             onChange={(e) => {
               // Get the input value
-              let enteredCVV = e.target.value;
-              enteredCVV = enteredCVV.replace(/\D/g, "");
+              let enteredCvc = e.target.value;
+              enteredCvc = enteredCvc.replace(/\D/g, "");
               // Limit the length to 3 characters
 
-              if (enteredCVV.length > 3) {
-                enteredCVV = enteredCVV.slice(0, 3);
+              if (enteredCvc.length > 3) {
+                enteredCvc = enteredCvc.slice(0, 3);
               }
-              // Set the cvv state with the modified value
-              setCvv(enteredCVV);
+              // Set the cvc state with the modified value
+              setCvc(enteredCvc);
             }}
-            onBlur={() => handleBlur("cvv")}
+            onBlur={() => handleBlur("cvc")}
             className={`w-full p-2 border ${
-              !cvvValid ? "border-red-500" : "border-gray-300"
+              !cvcValid ? "border-red-500" : "border-gray-300"
             } rounded focus:outline-none focus:border-blue-500 focus:shadow-outline-blue`}
-            data-cy="cvv"
+            data-cy="cvc"
           />
-          {cvvField && (
+          {cvcField && (
             <div
               className={`text-sm ${
-                cvvField.length === 3 ? "text-green-500" : "text-red-500"
+                cvcField.length === 3 ? "text-green-500" : "text-red-500"
               }`}
             >
-              {cvvField.length !== 3
-                ? "CVV must be 3 digits long"
-                : "CVV is valid"}
+              {cvcField.length !== 3
+                ? "CVC must be 3 digits long"
+                : "CVC is valid"}
             </div>
           )}
         </label>

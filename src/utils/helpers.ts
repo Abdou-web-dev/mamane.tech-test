@@ -15,19 +15,6 @@ export function generateRandomInteger() {
   return randomInteger;
 }
 
-const productNames = [
-  "Laptop",
-  "Smartphone",
-  "Headphones",
-  "Camera",
-  "Smartwatch",
-  "Tablet",
-  "Printer",
-  "Gaming Console",
-  "Fitness Tracker",
-  "Wireless Earbuds",
-];
-
 export const getCardType = (cardNumber: string) => {
   // Remove non-numeric characters
   const cleanNumber = cardNumber.replace(/\D/g, "");
@@ -51,13 +38,24 @@ export const getCardType = (cardNumber: string) => {
   return "unknown";
 };
 
+export const isValidCardNumber = (value: string): boolean => {
+  const validation = number(value);
+  return validation.isValid;
+};
+const productNames = [
+  "Laptop",
+  "Smartphone",
+  "Headphones",
+  "Camera",
+  "Smartwatch",
+  "Tablet",
+  "Printer",
+  "Gaming Console",
+  "Fitness Tracker",
+  "Wireless Earbuds",
+];
 export function generateRandomProductName() {
   const randomProductName =
     productNames[Math.floor(Math.random() * productNames.length)];
   return randomProductName;
 }
-
-export const isValidCardNumber = (value: string): boolean => {
-  const validation = number(value);
-  return validation.isValid;
-};

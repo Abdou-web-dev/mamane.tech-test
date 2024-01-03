@@ -1,68 +1,52 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { UseMutateFunction, useMutation } from "react-query";
-import { object, string, z } from "zod";
 import { CreditCardContext } from "../context/CreditCardContext";
 import { isValidCardNumber } from "../utils/helpers";
+import { FieldNames, emailSchema, schema } from "../zod/Validation";
 import { CheckOutBtn } from "./CheckOutBtn";
 import { CustomerDetails } from "./CustomerDetails";
 import { Modal } from "./MsgModal";
 import { PaymentMethod } from "./PaymentMethod";
 import "./styles.css";
 
+// I renamed some state variables inside this component , added Field word so that I can use them in zod validation...
 interface CreditCardInfosProps {}
 
 export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
-  // I renamed some state variables inside this component , added Field word so that I can use them in zod validation...
-
-  const [emailValid, setEmailValid] = useState(true);
-  const [nameValid, setNameValid] = useState(true);
-  const [addressValid, setAddressValid] = useState(true);
-  const [cardNumberValid, setCardNumberValid] = useState(true);
-  const [cvvValid, setCvvValid] = useState(true);
-  const [monthValid, setMonthValid] = useState(true);
-  const [yearValid, setYearValid] = useState(true);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [loading, setIsLoading] = useState(false);
+  // By doing this, I ensure that the values are directly pulled from the context when the component renders, and they will be reactive to changes in the context.
 
   const {
     name: nameField,
     email: emailField,
     address: addressField,
     cardNumber: creditCardNumber,
-    cvv: cvvField,
+    cvc: cvcField,
     orderData,
     showModal,
     setShowModal,
     setShowRedBorder,
     selectedMonth,
     selectedYear,
+    // formattedCN,
   } = useContext(CreditCardContext);
 
-  // Define your schema using Zod
-  const schema = object({
-    email: string().email(),
-    name: string(),
-    address: string(),
-    cardNumber: string().refine((value) => isValidCardNumber(value), {
-      message: "Invalid credit card number",
-    }),
-    cvv: string().refine((value) => value.length === 3, {
-      message: "CVV must be 3 digits",
-    }),
-    expirationDate: z.object({
-      month: z.string(),
-      year: z.string(),
-      // month: z.date(),
-      // year: z.date(),
-    }),
-  });
+  const [emailValid, setEmailValid] = useState(true);
+  const [nameValid, setNameValid] = useState(true);
+  const [addressValid, setAddressValid] = useState(true);
+  const [cardNumberValid, setCardNumberValid] = useState(true);
+  const [cvcValid, setCvcValid] = useState(true);
+  const [monthValid, setMonthValid] = useState(true);
+  const [yearValid, setYearValid] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setIsLoading] = useState(false);
+  const [showFailure, setShowFailure] = useState(false);
 
   const formData = {
     email: emailField,
     name: nameField,
     cardNumber: creditCardNumber,
     address: addressField,
-    cvv: cvvField,
+    cvc: cvcField,
     expirationDate: {
       month: selectedMonth,
       year: selectedYear,
@@ -70,13 +54,9 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     // other fields...
   };
 
-  const emailSchema = object({
-    email: string().email(),
-  });
   const emailData = {
     email: emailField,
   };
-  const emailValidationResult = emailSchema.safeParse(emailData);
 
   function validateFields(): boolean {
     // Reset validation state
@@ -84,7 +64,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     setNameValid(true);
     setAddressValid(true);
     setCardNumberValid(true);
-    setCvvValid(true);
+    setCvcValid(true);
     setMonthValid(true);
     setYearValid(true);
 
@@ -102,8 +82,8 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       setCardNumberValid(false);
     }
 
-    if (!cvvField) {
-      setCvvValid(false);
+    if (!cvcField) {
+      setCvcValid(false);
     }
     if (!selectedMonth) {
       setMonthValid(false); // Set to true if the condition is met
@@ -120,30 +100,17 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       nameValid &&
       addressValid &&
       cardNumberValid &&
-      cvvValid
+      cvcValid
     );
   }
 
-  // to make the code more maintainable and less error-prone in case of typos or changes to field names.
-  // Constants or Enums
-  const FieldNames = {
-    EMAIL: "email",
-    NAME: "name",
-    ADDRESS: "address",
-    CARD_NUMBER: "cardNumber",
-    CVV: "cvv",
-    MONTH: "month",
-    YEAR: "year",
-  };
-
   // To remove the red border as soon as the user types something in the field
+  // !!email: The !! is a JavaScript idiom to convert a value to a boolean. It's essentially a double negation. If email is a truthy value (not empty or not falsy), !!email will be true. If email is an empty string or a falsy value, !!email will be false.
   const handleBlur = (field: string) => {
     switch (field) {
-      // case "email":
       case FieldNames.EMAIL:
         setEmailValid(!!emailField); // Set to true if email is not empty
         break;
-      // !!email: The !! is a JavaScript idiom to convert a value to a boolean. It's essentially a double negation. If email is a truthy value (not empty or not falsy), !!email will be true. If email is an empty string or a falsy value, !!email will be false.
       case FieldNames.NAME:
         setNameValid(!!nameField);
         break;
@@ -153,8 +120,8 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       case FieldNames.CARD_NUMBER:
         setCardNumberValid(!!creditCardNumber);
         break;
-      case FieldNames.CVV:
-        setCvvValid(!!cvvField);
+      case FieldNames.CVC:
+        setCvcValid(!!cvcField);
         break;
       case FieldNames.MONTH:
         setMonthValid(!!selectedMonth);
@@ -185,6 +152,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       );
       // Assuming you want to show the success message upon successful checkout
       setShowSuccess(true);
+
       setShowModal(true);
       // Delay to hide the success message after 3 seconds
       setTimeout(() => {
@@ -193,6 +161,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       return simulatedResponse;
     } catch (error) {
       console.error("Mutation error:", error);
+
       // Simulate an error response from the server
       return { success: false, message: "Error placing the order" };
     }
@@ -215,7 +184,8 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
   } = useMutation(postOrder);
 
   const handleCheckout = async () => {
-    // These lines ensure that the function won't proceed with the checkout process if any of the required fields are missing.
+    // These lines ensure that the function won't proceed with the checkout process if any of the
+    // required fields are missing.
 
     if (
       !emailField ||
@@ -224,15 +194,16 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       !creditCardNumber ||
       !selectedMonth ||
       !selectedYear ||
-      !cvvField
+      !cvcField
     ) {
       return;
     }
     // Validate the form data using Zod schema
     try {
       const validationResult = schema.safeParse(formData);
+      console.log(validationResult.success, "validationResult.success");
 
-      if (validationResult.success) {
+      if (validationResult.success === true) {
         // Validation succeeded
         console.log("Valid user credentials and card infos!");
 
@@ -244,7 +215,6 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
             // Call the mutation to send the POST request
             // console.error("About to call mutate with orderData:", orderData);
             const result = await mutate(orderData);
-            // console.log(result);
 
             // If successful, you might want to handle the result accordingly
             if (result && result.success) {
@@ -264,6 +234,15 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       } else {
         // Validation failed
         console.error("Validation errors:", validationResult.error.errors);
+        //display the failure msg
+        if (!isValidCardNumber(creditCardNumber)) {
+          setShowFailure(true);
+        } else {
+          setShowFailure(false);
+        }
+        setTimeout(() => {
+          setShowFailure(false);
+        }, 2000);
       }
     } catch (error: any) {
       // Handle validation errors
@@ -283,8 +262,10 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
     if (emailField) handleBlur("email");
   }, [nameField, addressField, emailField]);
 
+  const emailValidationResult = emailSchema.safeParse(emailData);
+
   return (
-    <div className="Customer-details grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div className="credit-card-infos grid grid-cols-1 md:grid-cols-2 gap-12">
       {/* Customer Details */}
       <CustomerDetails
         {...{
@@ -299,7 +280,7 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
       {/* Payment Method */}
       <PaymentMethod
         {...{
-          cvvValid,
+          cvcValid,
           handleBlur,
           monthValid,
           yearValid,
@@ -315,11 +296,11 @@ export const CreditCardInfos: FunctionComponent<CreditCardInfosProps> = () => {
           showSuccess,
           validateFields,
           loading,
+          showFailure,
         }}
       />
 
       <>{showModal && <Modal {...{ setShowModal, showModal }} />}</>
-      {/* {isError && <p className="text-red-500">Error: {error.message}</p>} */}
     </div>
   );
 };

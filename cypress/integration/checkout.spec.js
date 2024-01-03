@@ -1,5 +1,3 @@
-// checkout.spec.js
-
 describe("Checkout Functionality", () => {
   it("Should complete the checkout process successfully", () => {
     cy.visit("http://localhost:5173"); // Replace with your app's URL
@@ -55,14 +53,14 @@ describe("Checkout Functionality", () => {
     //   This way, you can ensure that all these conditions are met in a single chain of assertions. It makes the test code more concise and easier to understand. If any of these conditions fails, the test will fail at the point of failure, providing a clearer picture of what went wrong.
 
     // assertion 5
-    cy.get("[data-cy=cvv]")
+    cy.get("[data-cy=cvc]")
       .click()
       .should("have.attr", "type", "number") // Keep the "number" type assertion
       .should("exist")
       .should("have.css", "padding", "0.5rem");
 
-    cy.get("[data-cy=cvv]").blur().should("have.class", "border-red-500");
-    // This assumes that the CVV field is intentionally a number input, and the assertions should align with that expectation.
+    cy.get("[data-cy=cvc]").blur().should("have.class", "border-red-500");
+    // This assumes that the CVC field is intentionally a number input, and the assertions should align with that expectation.
 
     // assertion 6
     // Click the checkout button
@@ -97,7 +95,7 @@ describe("Checkout Functionality", () => {
     cy.get("[data-cy=address]").type("123 Main St");
     cy.get("[data-cy=cardNumber]").type("1234 5678 9012 3456");
     cy.get("[data-cy=expirationDate]").type("12/25");
-    cy.get("[data-cy=cvv]").type("654");
+    cy.get("[data-cy=cvc]").type("654");
 
     // Click the checkout button
     cy.get("[data-cy=checkout-btn]").click();
@@ -107,59 +105,93 @@ describe("Checkout Functionality", () => {
   });
 });
 
-
 // *********************************
 
-Certainly! Let's go through each of the scenarios you mentioned:
+// Additional Negative Scenarios:
+// Invalid Email:
 
-Additional Negative Scenarios:
-Invalid Email:
+// Test attempting to place an order with an invalid email.
+// For example, use an email without the '@' symbol.
+// Incomplete Credit Card Details:
 
-Test attempting to place an order with an invalid email.
-For example, use an email without the '@' symbol.
-Incomplete Credit Card Details:
+// Test attempting to place an order with incomplete credit card details.
+// For example, leave out the CVC or expiration date.
+// Handling Loading and Non-Loading States:
+// Loading State:
+// Test scenarios where the loading state is triggered (e.g., clicking the checkout button).
+// Ensure that elements indicative of loading are visible.
+// Non-Loading State:
+// Test scenarios where the loading state should disappear.
+// Ensure that elements indicative of loading are not visible.
+// Testing Asynchronous Behavior:
+// Waiting for Elements:
+// Test scenarios where you need to wait for certain elements to appear or disappear.
+// For example, wait for the success message to appear after a successful order placement.
+// Checking for Absence of Success Message:
+// Order Not Placed Successfully:
+// Test scenarios where the order is not placed successfully.
+// Ensure that the success message is not present or is replaced by an error message.
 
-Test attempting to place an order with incomplete credit card details.
-For example, leave out the CVV or expiration date.
-Handling Loading and Non-Loading States:
-Loading State:
-Test scenarios where the loading state is triggered (e.g., clicking the checkout button).
-Ensure that elements indicative of loading are visible.
-Non-Loading State:
-Test scenarios where the loading state should disappear.
-Ensure that elements indicative of loading are not visible.
-Testing Asynchronous Behavior:
-Waiting for Elements:
-Test scenarios where you need to wait for certain elements to appear or disappear.
-For example, wait for the success message to appear after a successful order placement.
-Checking for Absence of Success Message:
-Order Not Placed Successfully:
-Test scenarios where the order is not placed successfully.
-Ensure that the success message is not present or is replaced by an error message.
-Example Test Cases:
-javascript
-Copy code
 describe("Additional Test Scenarios", () => {
+  // vallid email test scenario
   it("Should handle invalid email during checkout", () => {
     // Fill in the necessary details with an invalid email
-    cy.get("[data-cy=email]").type("invalidemail");
+    cy.get("[data-cy=email]").type("ethan_test@gmail.c" || "hamzagmail.com");
 
     // Click the checkout button
     cy.get("[data-cy=checkout-btn]").click();
 
     // Ensure an appropriate error message is displayed
-    cy.contains("Invalid email address").should("exist");
+    cy.contains("Invalid email").should("exist");
+  });
+  // vallid email test scenario
+  it("Should handle valid email during checkout", () => {
+    // Fill in the necessary details with an invalid email
+    cy.get("[data-cy=email]").type("ethan_444@gmail.com");
+
+    // Click the checkout button
+    cy.get("[data-cy=checkout-btn]").click();
+
+    // Ensure an appropriate error message is displayed
+    cy.contains("valid email").should("exist");
   });
 
-  it("Should handle incomplete credit card details during checkout", () => {
+  // invallid cvc scenario
+  it("Should handle invalid CVC during checkout", () => {
     // Fill in the necessary details with incomplete credit card details
-    cy.get("[data-cy=cvv]").type("123"); // Incomplete CVV
+    cy.get("[data-cy=cvc]").type("12"); // Incomplete CVC
 
     // Click the checkout button
     cy.get("[data-cy=checkout-btn]").click();
 
     // Ensure an appropriate error message is displayed
-    cy.contains("Incomplete credit card details").should("exist");
+    cy.contains("CVC must be 3 digits long").should("exist");
+  });
+
+  // vallid cvc scenario
+  it("Should handle valid CVC during checkout", () => {
+    // Fill in the necessary details with incomplete credit card details
+    cy.get("[data-cy=cvc]").type("450"); // Incomplete CVC
+
+    // Click the checkout button
+    cy.get("[data-cy=checkout-btn]").click();
+
+    // Ensure an appropriate error message is displayed
+    cy.contains("CVC is valid").should("exist");
+  });
+
+  // invallid CN scenario
+  it("Should handle invalid credit card number during checkout", () => {
+    // Fill in the necessary details with incomplete credit card details
+    cy.get("[data-cy=creditcard]").type("122101215487444");
+    // cy.get("[data-cy=creditcard]").type("02154444");
+
+    // Click the checkout button
+    cy.get("[data-cy=checkout-btn]").click();
+
+    // Ensure an appropriate error message is displayed
+    cy.contains("Credit card number is not valid.").should("exist");
+    cy.contains("Credit card number must be 16 digits.").should("exist");
   });
 
   it("Should handle loading and non-loading states during checkout", () => {
@@ -175,18 +207,34 @@ describe("Additional Test Scenarios", () => {
 
   it("Should wait for success message after successful order placement", () => {
     // Fill in valid details
-    // ...
+    cy.get("[data-cy=email]").type("ilias9541@gmail.com");
+    cy.get("[data-cy=name]").type("ilias hafidi");
+    cy.get("[data-cy=address]").type("37 RUE BARTEL CASA MAROC");
+    cy.get("[data-cy=creditcard]").type("4456 5300 0000 1005");
+    cy.get("[data-cy=cvc]").type("025");
+    cy.get("[data-cy=cy-month]").type("5");
+    cy.get("[data-cy=cy-year]").type("2029");
 
     // Click the checkout button
     cy.get("[data-cy=checkout-btn]").click();
 
     // Wait for success message to appear
     cy.contains("Order placed successfully").should("exist");
+    cy.get("[data-cy=success-modal]").should("be.visible");
+    // Click the close button
+    cy.get("[data-cy=modal-close-btn]").click();
+    cy.get("[data-cy=success-modal]").should("not.exist");
   });
 
   it("Should handle scenarios where the order is not placed successfully", () => {
     // Simulate a scenario where the order fails (e.g., mock server response)
-    // ...
+    cy.get("[data-cy=email]").type("ilias9541@gmail.f");
+    cy.get("[data-cy=name]").type("ilias hafidi");
+    cy.get("[data-cy=address]").type("37 RUE BARTEL CASA MAROC");
+    cy.get("[data-cy=creditcard]").type("4456 5300 0000 ");
+    cy.get("[data-cy=cvc]").type("025");
+    cy.get("[data-cy=cy-month]").type("5");
+    cy.get("[data-cy=cy-year]").type("");
 
     // Click the checkout button
     cy.get("[data-cy=checkout-btn]").click();
@@ -196,6 +244,8 @@ describe("Additional Test Scenarios", () => {
 
     // Ensure an appropriate error message is displayed
     cy.contains("Failed to place order").should("exist");
+    cy.get("[data-cy=success-modal]").should("not.exist");
+    // This approach makes sense, as I want to verify that when the order fails to be placed, the success modal is not present. It aligns with the expected behavior that the success modal should only appear when the order is successfully placed.
   });
 });
 // Feel free to adapt these test cases based on the actual behavior of your application and how error messages are handled.

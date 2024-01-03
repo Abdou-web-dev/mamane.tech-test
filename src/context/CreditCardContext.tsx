@@ -21,8 +21,8 @@ export interface CreditCardContextType {
   setCardNumber: React.Dispatch<React.SetStateAction<string>>;
   expirationDate: string;
   setExpirationDate: React.Dispatch<React.SetStateAction<string>>;
-  cvv: string;
-  setCvv: React.Dispatch<React.SetStateAction<string>>;
+  cvc: string;
+  setCvc: React.Dispatch<React.SetStateAction<string>>;
   orderData: OrderDataType;
   selectedItems: {
     productId: string;
@@ -30,9 +30,7 @@ export interface CreditCardContextType {
     quantity: number;
     price: number;
   }[];
-  // handleCheckout: () => void;
   isLoading: boolean;
-  // loading: boolean;
   isError: boolean;
   isSuccess: boolean;
   data:
@@ -66,8 +64,8 @@ export const CreditCardContext = createContext<CreditCardContextType>({
   setCardNumber: () => {},
   expirationDate: "",
   setExpirationDate: () => {},
-  cvv: "",
-  setCvv: () => {},
+  cvc: "",
+  setCvc: () => {},
   orderData: {
     order: {
       items: [],
@@ -82,7 +80,7 @@ export const CreditCardContext = createContext<CreditCardContextType>({
       type: "",
       cardNumber: "",
       expirationDate: "",
-      cvv: "",
+      cvc: "",
     },
   },
   isLoading: false,
@@ -133,7 +131,7 @@ export const CreditCardContextProvider = ({
 
   const [cardNumber, setCardNumber] = useState("");
   const [expirationDate, setExpirationDate] = useState("");
-  const [cvv, setCvv] = useState("");
+  const [cvc, setCvc] = useState("");
   const [showRedBorder, setShowRedBorder] = useState(false);
 
   const [selectedMonth, setSelectedMonth] = useState("");
@@ -160,7 +158,7 @@ export const CreditCardContextProvider = ({
       type: "credit_card",
       cardNumber: cardNumber,
       expirationDate: expirationDate,
-      cvv: cvv,
+      cvc: cvc,
     },
   };
 
@@ -169,7 +167,7 @@ export const CreditCardContextProvider = ({
     console.log("Sending POST request with data:", orderData);
     constructJson();
     // If any field is missing, prevent further action
-    if (!email || !name || !address || !cardNumber || !expirationDate || !cvv) {
+    if (!email || !name || !address || !cardNumber || !expirationDate || !cvc) {
       return;
     }
     return { success: true, message: "" };
@@ -216,7 +214,7 @@ export const CreditCardContextProvider = ({
       type: "",
       cardNumber: "",
       expirationDate: "",
-      cvv: "",
+      cvc: "",
     },
   });
 
@@ -246,7 +244,7 @@ export const CreditCardContextProvider = ({
       type: "credit_card",
       cardNumber: cardNumber,
       expirationDate: expirationDate,
-      cvv: cvv,
+      cvc: cvc,
     };
 
     // Construct the final JSON object
@@ -300,11 +298,10 @@ export const CreditCardContextProvider = ({
         setCardNumber,
         expirationDate,
         setExpirationDate,
-        cvv,
-        setCvv,
+        cvc,
+        setCvc,
         orderData,
         selectedItems,
-        // handleCheckout,
         isLoading,
         isError,
         isSuccess,
